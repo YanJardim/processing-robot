@@ -29,9 +29,12 @@ class GameObject {
         this.speed = speed;
         c = color(255);
     }
+    public GameObject(PVector position, float rotAngle, PVector scale, float speed, PVector pivot) {
+        this(position, rotAngle, scale, speed);
+        this.pivot = pivot;
+    }
     public GameObject(PVector position, float rotAngle, PVector scale, float speed, color c) {
-        this(position, rotAngle, scale);
-        this.speed = speed;
+        this(position, rotAngle, scale, speed);
         this.c = c;
     }
     public GameObject(String imageName, PVector position, float rotAngle, PVector scale, float speed) {
@@ -47,18 +50,21 @@ class GameObject {
     public void update() {
       if(selected){
         c = color(255, 0, 0); 
-        if(keyPressed){
-           if(key == 'a'){
-              rotAngle += time.deltatime() * speed; 
-           }
-           if(key == 'd'){
-              rotAngle -= time.deltatime() * speed; 
-           }
-        }
+        getInput();
       }
       else{
          c = color(255); 
       }
+    }
+    public void getInput(){
+       if(keyPressed){
+           if(key == 'a'){
+              rotAngle -= time.deltatime() * speed; 
+           }
+           if(key == 'd'){
+              rotAngle += time.deltatime() * speed; 
+           }
+        } 
     }
     public float getAngle() {
         return atan2(-rotation.x, rotation.y);
@@ -80,15 +86,17 @@ class GameObject {
     public void drawWithRotation() {
         pushMatrix();
           translate(position.x, position.y);
+          rectMode(CENTER);
           rotate(rotAngle);
           drawShape();
           for(GameObject child : childrens){
             pushMatrix();
               translate(child.getPosition().x, child.getPosition().y);
-              rotate(child.rotAngle);
+              //rotate(child.rotAngle);
               child.draw();
             popMatrix();
           }
+          
         popMatrix();
     }
     

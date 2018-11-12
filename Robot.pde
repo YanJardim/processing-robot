@@ -1,89 +1,52 @@
 Time time;
 
-GameObject torso;
-GameObject armL, armR, handL, handR, head, legL, legR, footL, footR;
+BodyPart arm, forearm, hand;
+Axis armAxis, forearmAxis;
 
-GameObject selectedObject;
-
+BodyPart selected;
+final int axisSize = 50;
+final int axisHalf = axisSize / 2;
 void setup() {
   size(500, 500);
   time = new Time();
-  torso = new GameObject(new PVector(0, 0), 0, new PVector(30, 50), 10, new PVector(0, 0));
-  head = new GameObject(new PVector(0, -20), 0, new PVector(50, 50), 10);
-  armL = new GameObject(new PVector(-20, 0), 0, new PVector(50, 20), 10);
-  armR = new GameObject(new PVector(20, 0), 0, new PVector(50, 20), 10);
-  handL = new GameObject(new PVector(-18, 0), 0, new PVector(20, 20), 10);
-  handR = new GameObject(new PVector(18, 0), 0, new PVector(20, 20), 10);
-  legL = new GameObject(new PVector(-5, 20), 0, new PVector(10, 30), 10);
-  legR = new GameObject(new PVector(5, 20), 0, new PVector(10, 30), 10);
-  footL = new GameObject(new PVector(-2, 8), 0, new PVector(20, 5), 10);
-  footR = new GameObject(new PVector(2, 8), 0, new PVector(20, 5), 10);
   
-  torso.addChildren(armL);
-  torso.addChildren(armR);
-  torso.addChildren(head);
-  torso.addChildren(legL);
-  torso.addChildren(legR);
+  arm = new BodyPart(new PVector(50, 40), new PVector(100, 50), true);
+  armAxis = new Axis(new PVector(arm.getScale().x / 2 - axisHalf, 0), new PVector(axisSize, axisSize));
+  forearm = new BodyPart(new PVector(arm.getScale().x / 2, 0), new PVector(100, 40), false);
+  hand = new BodyPart(new PVector(forearm.getScale().x / 2 - axisHalf, 0), new PVector(70, 50), false);
   
-  armL.addChildren(handL);
-  armR.addChildren(handR);
-  
-  legL.addChildren(footL);
-  legR.addChildren(footR);
-  
-  //torso.addChildren(test);
-  
-  selectedObject = torso;
-  
+  arm.addChildren(armAxis);
+  armAxis.addChildren(forearm);
+  forearm.addChildren(hand);
+  selected = arm;
 }
 
 void draw() {
-  translate(width / 2, height / 2);
+  
   background(0);
   time.setDeltaTime();
   
-  
-  torso.draw();
+  arm.draw();
+
   
   time.setLastTime();
 }
 
+
 void keyPressed(){
    if(key == '1'){
-       selectAxis(torso);
+      selectPart(arm);
    }
    if(key == '2'){
-       selectAxis(armL);
+      selectPart(forearm);
    }
    if(key == '3'){
-       selectAxis(handL);
-   }
-   if(key == '4'){
-       selectAxis(armR);
-   }
-   if(key == '5'){
-       selectAxis(handR);
-   }
-   if(key == '6'){
-       selectAxis(legR);
-   }
-   if(key == '7'){
-       selectAxis(footR);
-   }
-   
-   if(key == '8'){
-       selectAxis(legL);
-   }
-   if(key == '9'){
-       selectAxis(footL);
-   }
-   if(key == '0'){
-       selectAxis(head);
+      selectPart(hand);
    }
 }
 
-void selectAxis(GameObject obj){
-    selectedObject.setSelected(false);
-    selectedObject = obj;
+void selectPart(BodyPart obj){
     obj.setSelected(true);
+    selected.setSelected(false);
+    selected = obj;
 }

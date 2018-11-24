@@ -73,9 +73,26 @@ abstract class GameObject {
     rect(0, 0, scale.x, scale.y);
   }
   public void drawWithRotation() {
+
     pushMatrix();
     translate(position.x, position.y);
-    rectMode(CENTER);
+    rotate(rotAngle);
+    pushMatrix();
+    translate(-pivot.x, -pivot.y);
+    drawShape();
+    for (GameObject child : childrens) {
+      pushMatrix();
+      translate(child.getPosition().x, child.getPosition().y);
+      child.draw();
+      popMatrix();
+    }
+    popMatrix();
+    ellipse(0, 0, 5, 5);
+    popMatrix();
+    
+    /*pushMatrix();
+    translate(position.x, position.y);
+    //rectMode(CENTER);
     rotate(rotAngle);
     
     drawShape();
@@ -87,7 +104,7 @@ abstract class GameObject {
       popMatrix();
     }
 
-    popMatrix();
+    popMatrix();*/
   }
 
   public void applyRotation() {
@@ -118,7 +135,37 @@ abstract class GameObject {
     this.parent = parent;
   }
 
-
+  public PVector getPivot() {
+    return pivot;
+  }
+  public void setPivot(PVector pivot) {
+    this.pivot = pivot;
+  }
+  public void setPivot(Pivots mode){
+     switch(mode){
+        case MIDDLE:
+          setPivot(new PVector(scale.x / 2, scale.y / 2));  
+        break;
+        case MIDDLELEFT:
+          setPivot(new PVector(0, scale.y / 2));  
+        break;
+        case MIDDLERIGHT:
+          setPivot(new PVector(scale.x, scale.y / 2));  
+        break;
+        case BOTTOMLEFT:
+          setPivot(new PVector(0, scale.y));  
+        break;
+        case BOTTOMRIGHT:
+          setPivot(new PVector(scale.x, scale.y));  
+        break;
+        case TOPLEFT:
+          setPivot(new PVector(0, 0));  
+        break;
+        case TOPRIGHT:
+          setPivot(new PVector(scale.x, 0));  
+        break;
+     }
+  }
   public PVector getScale() {
     return scale;
   }

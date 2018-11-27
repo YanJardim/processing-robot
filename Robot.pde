@@ -16,8 +16,8 @@ public enum Pivots {
 void setup() {
   size(800, 800);
   time = new Time();
-  manager = new GameManager();
-  buttonSpawner = new ButtonSpawner(1, new PVector(300, 300));
+  manager = new GameManager(60);
+  buttonSpawner = new ButtonSpawner(2, new PVector(300, 300));
   arm = new BodyPart(new PVector(0, 0), new PVector(140, 30), true, getImageArmsPath("Braço2-3"));
   forearm = new BodyPart(new PVector(arm.getScale().x / 2, arm.getScale().y / 4), new PVector(140, 28), false, getImageArmsPath("Braço2-1"));
   hand = new BodyPart(new PVector(forearm.getScale().x / 2, forearm.getScale().y / 4), new PVector(70, 50), false, getImageArmsPath("Mão2"));
@@ -38,15 +38,23 @@ void draw() {
   background(0);
   //image(bgImage, -width / 2, -height / 2, width + 100, height + 100);
   time.setDeltaTime();
-  hand.updateBoudingBox(hand.getGlobalPosition());
-  checkCollisions();
-  buttonSpawner.update();
-  buttonSpawner.draw();
-  manager.drawText();
-  
-  hand.drawBoudingBox();
-  
-  arm.draw();
+
+  //Updates
+  manager.update();
+  if (manager.compareState(State.GAME)) {
+
+    hand.updateBoudingBox(hand.getGlobalPosition());
+    checkCollisions();
+    buttonSpawner.update();
+
+    //Draws
+
+    hand.drawBoudingBox();
+    arm.draw();
+    buttonSpawner.draw();
+  }
+
+  manager.draw();
 
   time.setLastTime();
 }
@@ -75,8 +83,6 @@ void keyPressed() {
   if (key == '3') {
     selectPart(hand);
   }
-  if (key == 'e') {
-  }
 }
 
 void checkCollisions() {
@@ -84,8 +90,8 @@ void checkCollisions() {
   int i = 0;
   for (Button b : buttons) {
     if (hand.checkCollision(b) && !b.isDead() ) {
+      manager.addPoints(b.getPoints());
       b.die();
-      manager.addPoints(10);
       //println("Colidiu com: " + i);
     }
     i++;

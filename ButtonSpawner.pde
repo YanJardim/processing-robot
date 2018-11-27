@@ -31,8 +31,10 @@ class ButtonSpawner {
     pos.x = pos.x - area.x / 2;
     pos.y = pos.y - area.y / 2;
     PVector scale = new PVector(50, 50);
-    String name = random(2) != 0 ? "BotãoVerde" : "BotãoVermelho";  
-    Button b = new Button(pos, scale, "images/buttons/" + name + ".png", 5);
+    int rand =  (int)random(2);
+    int points = rand == 0 ? -10 : 10;
+    String name = rand != 0 ? "BotãoVerde" : "BotãoVermelho";
+    Button b = new Button(pos, scale, "images/buttons/" + name + ".png", 10, points);
     buttons.add(b);
   }
   

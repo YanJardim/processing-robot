@@ -1,13 +1,15 @@
 class Button extends GameObject {
   private float lifeTimer, lifeTime;
   private boolean dead;
-  public Button(PVector pos, PVector scale, String imageName, float lifeTime) {
+  private int points;
+  public Button(PVector pos, PVector scale, String imageName, float lifeTime, int points) {
     super(pos, 0, scale);
     setColor(color(0, 0, 255));
     load(imageName);
     this.lifeTimer = 0;
     this.lifeTime = lifeTime;
     this.dead = false;
+    this.points = points;
   }
 
   @Override
@@ -28,7 +30,9 @@ class Button extends GameObject {
          die(); 
       }
   }
-  
+  public int getPoints(){
+    return points;
+  }
   public boolean isDead(){
      return dead; 
   }

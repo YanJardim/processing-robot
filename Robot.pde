@@ -1,9 +1,8 @@
 Time time;
 
-BodyPart arm, forearm, hand;
-Axis armAxis, forearmAxis;
+BodyPart arm, forearm, hand, selected;
+PImage bgImage;
 
-BodyPart selected;
 final int axisSize = 50;
 final int axisHalf = axisSize / 2;
 
@@ -13,12 +12,12 @@ public enum Pivots {
 }
 
 void setup() {
-  size(500, 500);
+  size(800, 800);
   time = new Time();
 
-  arm = new BodyPart(new PVector(50, 40), new PVector(100, 50), true);
-  forearm = new BodyPart(new PVector(arm.getScale().x / 2, arm.getScale().y / 4), new PVector(100, 40), false);
-  hand = new BodyPart(new PVector(forearm.getScale().x / 2, forearm.getScale().y / 4), new PVector(70, 50), false);
+  arm = new BodyPart(new PVector(0, 0), new PVector(100, 50), true, getImageArmsPath("Braço2-3"));
+  forearm = new BodyPart(new PVector(arm.getScale().x / 2, arm.getScale().y / 4), new PVector(100, 40), false, getImageArmsPath("Braço2-1"));
+  hand = new BodyPart(new PVector(forearm.getScale().x / 2, forearm.getScale().y / 4), new PVector(70, 50), false, getImageArmsPath("Mão2"));
 
   arm.setPivot(Pivots.MIDDLELEFT);
   forearm.setPivot(Pivots.MIDDLELEFT);
@@ -27,18 +26,33 @@ void setup() {
   arm.addChildren(forearm);
   forearm.addChildren(hand);
   selected = arm;
+
+  bgImage = loadImage(getImageScenePath("mesa"));
 }
 
 void draw() {
   translate(width / 2, height / 2);
   background(0);
+  //image(bgImage, -width / 2, -height / 2, width + 100, height + 100);
   time.setDeltaTime();
 
   arm.draw();
 
-
   time.setLastTime();
 }
+
+String getImagePath(String file) {
+  return "images/" + file + ".png";
+}
+
+String getImageArmsPath(String file) {
+  return getImagePath("arm/" + file);
+}
+
+String getImageScenePath(String file) {
+  return getImagePath("scene/" + file);
+}
+
 
 
 void keyPressed() {

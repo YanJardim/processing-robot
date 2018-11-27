@@ -4,7 +4,7 @@ abstract class GameObject {
   protected GameObject parent;
   protected ArrayList<GameObject> childrens;
   protected PVector position, pivot, rotation, scale;
-  protected PImage image;
+  protected PImage image, axis;
   protected float speed, rotSpeed, rotAngle;
   protected color c;
   protected char keyAssigned;
@@ -21,6 +21,7 @@ abstract class GameObject {
     this(position, rotAngle);
     this.scale = scale;
     c = color(255);
+    this.axis = loadImage("images/arm/Braço2&3-2.png");
   }
   public GameObject(PVector position, float rotAngle, PVector scale, float speed) {
     this(position, rotAngle, scale);
@@ -37,13 +38,14 @@ abstract class GameObject {
   }
   public GameObject(String imageName, PVector position, float rotAngle, PVector scale, float speed) {
     this(position, rotAngle, scale, speed);
-    this.image = loadImage("images/" + imageName + ".png");
+    this.image = loadImage(imageName);
   }
-
+  public void load(String imageName){
+     this.image = loadImage(imageName);
+  }
   public void draw() {
-    drawWithRotation();
     update();
-    //drawBoudingBox();
+
   }
 
   public void update() {
@@ -64,7 +66,6 @@ abstract class GameObject {
     drawImage(position.x, position.y);
   }
   public void drawImage(float x, float y) {
-    imageMode(CENTER);
     image(image, x, y, scale.x, scale.y);
   }
   public void drawShape() {
@@ -72,47 +73,17 @@ abstract class GameObject {
     //stroke(0, 255, 0);
     rect(0, 0, scale.x, scale.y);
   }
-  public void drawWithRotation() {
-
-    pushMatrix();
-    translate(position.x, position.y);
-    rotate(rotAngle);
-    pushMatrix();
-    translate(-pivot.x, -pivot.y);
-    drawShape();
-    for (GameObject child : childrens) {
-      pushMatrix();
-      translate(child.getPosition().x, child.getPosition().y);
-      child.draw();
-      popMatrix();
-    }
-    popMatrix();
-    ellipse(0, 0, 5, 5);
-    popMatrix();
-    
-    /*pushMatrix();
-    translate(position.x, position.y);
-    //rectMode(CENTER);
-    rotate(rotAngle);
-    
-    drawShape();
-    for (GameObject child : childrens) {
-      pushMatrix();
-      translate(child.getPosition().x, child.getPosition().y);
-      //rotate(child.rotAngle);
-      child.draw();
-      popMatrix();
-    }
-
-    popMatrix();*/
-  }
+  
 
   public void applyRotation() {
     rotation.x = cos(rotAngle);
     rotation.y = sin(rotAngle);
   }
   
-  
+  public void drawAxis(int size){
+      
+      image(axis, -size / 2, -size / 2, size,size);
+  }
 
 
   //GETTERS AND SETTERS

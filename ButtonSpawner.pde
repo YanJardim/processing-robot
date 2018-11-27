@@ -35,4 +35,8 @@ class ButtonSpawner {
     Button b = new Button(pos, scale, "images/buttons/" + name + ".png", 5);
     buttons.add(b);
   }
+  
+  public ArrayList<Button> getButtons(){
+     return buttons; 
+  }
 }

@@ -38,9 +38,13 @@ void draw() {
   background(0);
   //image(bgImage, -width / 2, -height / 2, width + 100, height + 100);
   time.setDeltaTime();
+  hand.updateBoudingBox(hand.getGlobalPosition());
+  checkCollisions();
   buttonSpawner.update();
   buttonSpawner.draw();
   manager.drawText();
+  
+  hand.drawBoudingBox();
   
   arm.draw();
 
@@ -70,6 +74,21 @@ void keyPressed() {
   }
   if (key == '3') {
     selectPart(hand);
+  }
+  if (key == 'e') {
+  }
+}
+
+void checkCollisions() {
+  ArrayList<Button> buttons = buttonSpawner.getButtons();
+  int i = 0;
+  for (Button b : buttons) {
+    if (hand.checkCollision(b) && !b.isDead() ) {
+      b.die();
+      manager.addPoints(10);
+      //println("Colidiu com: " + i);
+    }
+    i++;
   }
 }
 

@@ -3,7 +3,7 @@ import java.awt.Rectangle;
 abstract class GameObject {
   protected GameObject parent;
   protected ArrayList<GameObject> childrens;
-  protected PVector position, pivot, rotation, scale;
+  protected PVector position, pivot, rotation, scale, globalPosition;
   protected PImage image, axis;
   protected float speed, rotSpeed, rotAngle;
   protected color c;
@@ -16,6 +16,7 @@ abstract class GameObject {
     this.rotAngle = rotAngle;
     this.rotation = new PVector(0, 0);
     this.rotSpeed = 5;
+    this.globalPosition = new PVector(0, 0);
   }
   public GameObject(PVector position, float rotAngle, PVector scale) {
     this(position, rotAngle);
@@ -48,7 +49,7 @@ abstract class GameObject {
   }
 
   public void update() {
-    updateImage();
+    updateBoudingBox(position);
 
     //updateSelectedColor();
     updateRotation();
@@ -75,20 +76,21 @@ abstract class GameObject {
     rect(0, 0, scale.x, scale.y);
   }
 
-  public void updateImage() {
+  public void updateBoudingBox(PVector pos) {
     float parentOffsetX = parent != null ?  parent.getScale().x / 2 : 0;
     float parentOffsetY = parent != null ?  parent.getScale().y / 2 - 5 : 0;
-    boudingBox.setLocation((int)(position.x - parentOffsetX), (int)(position.y - parentOffsetY));
+    boudingBox.setLocation((int)(pos.x), (int)(pos.y));
   }
-  public void updateBoudingBox() {
-    boudingBox = new Rectangle((int)(position.x - scale.x / 2), (int)(position.y - scale.y / 2), (int)scale.x, (int)scale.y);
-  }
+
   public void drawBoudingBox() {
     noFill();
     stroke(200, 0, 50);
     rect((float)boudingBox.getX(), (float)boudingBox.getY(), (float)boudingBox.getWidth(), (float)boudingBox.getHeight());
   }
 
+  public boolean checkCollision(GameObject other) {
+    return boudingBox.intersects(other.boudingBox);
+  }
 
   public void applyRotation() {
     rotation.x = cos(rotAngle);
@@ -99,7 +101,17 @@ abstract class GameObject {
 
     image(axis, -size / 2, -size / 2, size, size);
   }
+  public PVector getGlobalPosition() {
 
+    return new PVector(globalPosition.x - width / 2, globalPosition.y - height / 2);
+  }
+
+  public GameObject getRootParent(GameObject parent) {
+    if (parent.parent != null) {
+      return getRootParent(parent.parent);
+    }
+    return parent;
+  }
 
   //GETTERS AND SETTERS
   public PVector getPosition() {

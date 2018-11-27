@@ -1,89 +1,105 @@
 Time time;
 
-GameObject torso;
-GameObject armL, armR, handL, handR, head, legL, legR, footL, footR;
+BodyPart arm, forearm, hand, selected;
+GameManager manager;
+ButtonSpawner buttonSpawner;
+PImage bgImage;
 
-GameObject selectedObject;
+final int axisSize = 50;
+final int axisHalf = axisSize / 2;
+
+
+public enum Pivots {
+  MIDDLE, MIDDLELEFT, MIDDLERIGHT, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
+}
 
 void setup() {
-  size(500, 500);
+  size(800, 800);
   time = new Time();
-  torso = new GameObject(new PVector(0, 0), 0, new PVector(30, 50), 10, new PVector(0, 0));
-  head = new GameObject(new PVector(0, -20), 0, new PVector(50, 50), 10);
-  armL = new GameObject(new PVector(-20, 0), 0, new PVector(50, 20), 10);
-  armR = new GameObject(new PVector(20, 0), 0, new PVector(50, 20), 10);
-  handL = new GameObject(new PVector(-18, 0), 0, new PVector(20, 20), 10);
-  handR = new GameObject(new PVector(18, 0), 0, new PVector(20, 20), 10);
-  legL = new GameObject(new PVector(-5, 20), 0, new PVector(10, 30), 10);
-  legR = new GameObject(new PVector(5, 20), 0, new PVector(10, 30), 10);
-  footL = new GameObject(new PVector(-2, 8), 0, new PVector(20, 5), 10);
-  footR = new GameObject(new PVector(2, 8), 0, new PVector(20, 5), 10);
-  
-  torso.addChildren(armL);
-  torso.addChildren(armR);
-  torso.addChildren(head);
-  torso.addChildren(legL);
-  torso.addChildren(legR);
-  
-  armL.addChildren(handL);
-  armR.addChildren(handR);
-  
-  legL.addChildren(footL);
-  legR.addChildren(footR);
-  
-  //torso.addChildren(test);
-  
-  selectedObject = torso;
-  
+  manager = new GameManager(60);
+  buttonSpawner = new ButtonSpawner(2, new PVector(300, 300));
+  arm = new BodyPart(new PVector(0, 0), new PVector(140, 30), true, getImageArmsPath("Braço2-3"));
+  forearm = new BodyPart(new PVector(arm.getScale().x / 2, arm.getScale().y / 4), new PVector(140, 28), false, getImageArmsPath("Braço2-1"));
+  hand = new BodyPart(new PVector(forearm.getScale().x / 2, forearm.getScale().y / 4), new PVector(70, 50), false, getImageArmsPath("Mão2"));
+
+  arm.setPivot(Pivots.MIDDLELEFT);
+  forearm.setPivot(Pivots.MIDDLELEFT);
+  hand.setPivot(Pivots.MIDDLELEFT);
+
+  arm.addChildren(forearm);
+  forearm.addChildren(hand);
+  selected = arm;
+
+  bgImage = loadImage(getImageScenePath("mesa"));
 }
 
 void draw() {
   translate(width / 2, height / 2);
   background(0);
+  //image(bgImage, -width / 2, -height / 2, width + 100, height + 100);
   time.setDeltaTime();
-  
-  
-  torso.draw();
-  
+
+  //Updates
+  manager.update();
+  if (manager.compareState(State.GAME)) {
+
+    hand.updateBoudingBox(hand.getGlobalPosition());
+    checkCollisions();
+    buttonSpawner.update();
+
+    //Draws
+
+    hand.drawBoudingBox();
+    arm.draw();
+    buttonSpawner.draw();
+  }
+
+  manager.draw();
+
   time.setLastTime();
 }
 
-void keyPressed(){
-   if(key == '1'){
-       selectAxis(torso);
-   }
-   if(key == '2'){
-       selectAxis(armL);
-   }
-   if(key == '3'){
-       selectAxis(handL);
-   }
-   if(key == '4'){
-       selectAxis(armR);
-   }
-   if(key == '5'){
-       selectAxis(handR);
-   }
-   if(key == '6'){
-       selectAxis(legR);
-   }
-   if(key == '7'){
-       selectAxis(footR);
-   }
-   
-   if(key == '8'){
-       selectAxis(legL);
-   }
-   if(key == '9'){
-       selectAxis(footL);
-   }
-   if(key == '0'){
-       selectAxis(head);
-   }
+String getImagePath(String file) {
+  return "images/" + file + ".png";
 }
 
-void selectAxis(GameObject obj){
-    selectedObject.setSelected(false);
-    selectedObject = obj;
-    obj.setSelected(true);
+String getImageArmsPath(String file) {
+  return getImagePath("arm/" + file);
+}
+
+String getImageScenePath(String file) {
+  return getImagePath("scene/" + file);
+}
+
+
+
+void keyPressed() {
+  if (key == '1') {
+    selectPart(arm);
+  }
+  if (key == '2') {
+    selectPart(forearm);
+  }
+  if (key == '3') {
+    selectPart(hand);
+  }
+}
+
+void checkCollisions() {
+  ArrayList<Button> buttons = buttonSpawner.getButtons();
+  int i = 0;
+  for (Button b : buttons) {
+    if (hand.checkCollision(b) && !b.isDead() ) {
+      manager.addPoints(b.getPoints());
+      b.die();
+      //println("Colidiu com: " + i);
+    }
+    i++;
+  }
+}
+
+void selectPart(BodyPart obj) {
+  obj.setSelected(true);
+  selected.setSelected(false);
+  selected = obj;
 }

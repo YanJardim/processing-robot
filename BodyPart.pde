@@ -30,6 +30,7 @@ class BodyPart extends GameObject {
     rotate(rotAngle);
     pushMatrix();
     translate(-pivot.x, -pivot.y);
+    drawBoudingBox();
     drawShape();
     for (GameObject child : childrens) {
       pushMatrix();

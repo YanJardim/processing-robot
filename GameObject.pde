@@ -22,11 +22,11 @@ abstract class GameObject {
     this.scale = scale;
     c = color(255);
     this.axis = loadImage("images/arm/Braço2&3-2.png");
+    this.boudingBox = new Rectangle((int)(position.x - scale.x / 2), (int)(position.y - scale.y / 2), (int)scale.x, (int)scale.y);
   }
   public GameObject(PVector position, float rotAngle, PVector scale, float speed) {
     this(position, rotAngle, scale);
     this.speed = speed;
-    
   }
   public GameObject(PVector position, float rotAngle, PVector scale, float speed, PVector pivot) {
     this(position, rotAngle, scale, speed);
@@ -40,22 +40,23 @@ abstract class GameObject {
     this(position, rotAngle, scale, speed);
     this.image = loadImage(imageName);
   }
-  public void load(String imageName){
-     this.image = loadImage(imageName);
+  public void load(String imageName) {
+    this.image = loadImage(imageName);
   }
   public void draw() {
     update();
-
   }
 
   public void update() {
+    updateImage();
+
     //updateSelectedColor();
     updateRotation();
   }
   public void updateRotation() {
     rotation = new PVector(cos(rotAngle), sin(rotAngle));
   }
-  
+
 
   public float getAngle() {
     return atan2(-rotation.x, rotation.y);
@@ -73,16 +74,30 @@ abstract class GameObject {
     //stroke(0, 255, 0);
     rect(0, 0, scale.x, scale.y);
   }
-  
+
+  public void updateImage() {
+    float parentOffsetX = parent != null ?  parent.getScale().x / 2 : 0;
+    float parentOffsetY = parent != null ?  parent.getScale().y / 2 - 5 : 0;
+    boudingBox.setLocation((int)(position.x - parentOffsetX), (int)(position.y - parentOffsetY));
+  }
+  public void updateBoudingBox() {
+    boudingBox = new Rectangle((int)(position.x - scale.x / 2), (int)(position.y - scale.y / 2), (int)scale.x, (int)scale.y);
+  }
+  public void drawBoudingBox() {
+    noFill();
+    stroke(200, 0, 50);
+    rect((float)boudingBox.getX(), (float)boudingBox.getY(), (float)boudingBox.getWidth(), (float)boudingBox.getHeight());
+  }
+
 
   public void applyRotation() {
     rotation.x = cos(rotAngle);
     rotation.y = sin(rotAngle);
   }
-  
-  public void drawAxis(int size){
-      
-      image(axis, -size / 2, -size / 2, size,size);
+
+  public void drawAxis(int size) {
+
+    image(axis, -size / 2, -size / 2, size, size);
   }
 
 
@@ -112,30 +127,30 @@ abstract class GameObject {
   public void setPivot(PVector pivot) {
     this.pivot = pivot;
   }
-  public void setPivot(Pivots mode){
-     switch(mode){
-        case MIDDLE:
-          setPivot(new PVector(scale.x / 2, scale.y / 2));  
-        break;
-        case MIDDLELEFT:
-          setPivot(new PVector(0, scale.y / 2));  
-        break;
-        case MIDDLERIGHT:
-          setPivot(new PVector(scale.x, scale.y / 2));  
-        break;
-        case BOTTOMLEFT:
-          setPivot(new PVector(0, scale.y));  
-        break;
-        case BOTTOMRIGHT:
-          setPivot(new PVector(scale.x, scale.y));  
-        break;
-        case TOPLEFT:
-          setPivot(new PVector(0, 0));  
-        break;
-        case TOPRIGHT:
-          setPivot(new PVector(scale.x, 0));  
-        break;
-     }
+  public void setPivot(Pivots mode) {
+    switch(mode) {
+    case MIDDLE:
+      setPivot(new PVector(scale.x / 2, scale.y / 2));  
+      break;
+    case MIDDLELEFT:
+      setPivot(new PVector(0, scale.y / 2));  
+      break;
+    case MIDDLERIGHT:
+      setPivot(new PVector(scale.x, scale.y / 2));  
+      break;
+    case BOTTOMLEFT:
+      setPivot(new PVector(0, scale.y));  
+      break;
+    case BOTTOMRIGHT:
+      setPivot(new PVector(scale.x, scale.y));  
+      break;
+    case TOPLEFT:
+      setPivot(new PVector(0, 0));  
+      break;
+    case TOPRIGHT:
+      setPivot(new PVector(scale.x, 0));  
+      break;
+    }
   }
   public PVector getScale() {
     return scale;
@@ -158,6 +173,4 @@ abstract class GameObject {
   public ArrayList<GameObject> getChildrens() {
     return childrens;
   }
-
-  
 }

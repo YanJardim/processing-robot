@@ -17,7 +17,7 @@ void setup() {
   size(800, 800);
   time = new Time();
   manager = new GameManager();
-  buttonSpawner = new ButtonSpawner(5);
+  buttonSpawner = new ButtonSpawner(1, new PVector(300, 300));
   arm = new BodyPart(new PVector(0, 0), new PVector(100, 50), true, getImageArmsPath("Braço2-3"));
   forearm = new BodyPart(new PVector(arm.getScale().x / 2, arm.getScale().y / 4), new PVector(100, 40), false, getImageArmsPath("Braço2-1"));
   hand = new BodyPart(new PVector(forearm.getScale().x / 2, forearm.getScale().y / 4), new PVector(70, 50), false, getImageArmsPath("Mão2"));
